@@ -1,8 +1,8 @@
 import axios from './axios';
 
 const AuthService = {
-    login(user) {
-        return axios.post('users/login', ${ user})
+    login(user: object) {
+        return axios.post('users/login', user)
     },
 
     getUsers() {
