@@ -38,6 +38,20 @@ export default defineComponent({
 });
 </script>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <style scoped>
 .tab-header {
   display: flex;

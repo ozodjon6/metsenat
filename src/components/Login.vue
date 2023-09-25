@@ -37,6 +37,7 @@
 import {defineComponent, ref, computed} from "vue";
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'vue-router';
+import type {AxiosError} from "axios";
 
 export default defineComponent({
   name: 'Login',
@@ -62,7 +63,7 @@ export default defineComponent({
         // Перенаправление на home page
         await router.push('/');
         localStorage.setItem('isAuthenticated', 'true');
-      } catch (error) {
+      } catch (error:any) {
         // Обработайте ошибку аутентификации здесь
         console.error('Login error:', error);
         errorUser.value = error.response.data.detail;

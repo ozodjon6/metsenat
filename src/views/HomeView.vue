@@ -34,8 +34,36 @@
       <Tabs>
         <template v-for="tab in tabs" :key="tab" :slot="tab">
           <div v-if="activeTab === tab">
-            <Table :data="tabsTotal" :columns="tableColumns" :itemsPerPage="itemsPerPage"/>
-<!--            <Pagination :data="tabs" :current-page="currentPage" :total-pages="tableColumns.length"/>-->
+            <Table :data="items" :columns="tableColumns" :itemsPerPage="itemsPerPage">
+              <tr v-for="item in items" :key="item.id">
+                <td>{{item.id}}</td>
+                <td>{{item.full_name}}</td>
+                <td>{{item.phone}}</td>
+                <td>
+                  {{item.sum.toLocaleString().replaceAll(',', ' ')}}
+                  <span class="currency-unit">UZS</span>
+                </td>
+                <td>{{item.spent}}</td>
+                <td>{{new Date(item.created_at).toLocaleDateString('de-DE').replaceAll('.', '-')}}</td>
+                <td>
+                  <span
+                      :class="statusSponsors(item.get_status_display)"
+                      class="status"
+                  >{{item.get_status_display}}</span>
+                </td>
+                <td>
+                  <svg class="icon flex-shrink-0" width="24" height="24">
+                    <use xlink:href="@/assets/icons/sprite.svg#eye"></use>
+                  </svg>
+                </td>
+              </tr>
+            </Table>
+            <Pagination
+                :data="items"
+                :current-page="currentPage"
+                :total-pages="totalPages"
+                :itemsPerPage="10"
+            />
           </div>
         </template>
       </Tabs>
@@ -44,13 +72,15 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onMounted, ref, computed} from 'vue'
+import {defineComponent, onMounted, ref, computed, watch} from 'vue'
 import Header from "@/components/Header.vue";
 import Tabs from '@/components/Tabs.vue';
 import Table from "@/components/Table.vue";
 import Pagination from "@/components/Pagination.vue";
 import {useItemsStore} from '@/store/sponser-list';
 import {useAuthStore} from '@/store/auth';
+import {useRoute} from "vue-router";
+import {storeToRefs} from "pinia";
 
 export default defineComponent({
   name: "HomeView",
@@ -59,106 +89,50 @@ export default defineComponent({
   },
   setup() {
     const itemsStore = useItemsStore();
-    const items = ref([] as any[]);
+    const { items, meta } = storeToRefs(itemsStore)
     const currentPage = ref(1);
+    const totalPages = computed(() => Math.floor(meta.value.count / 10));
     const authStore = useAuthStore();
-    const activeTab = ref('Dashboard')
+    const activeTab = ref('Homiylar')
     const tabs = ['Dashboard', 'Homiylar', 'Talabalar']
     const tableColumns = [
         '#', 'F.I.SH.', 'Tel.Raqami', 'Homiylik summasi', 'Sarflangan summa', 'Sana', 'Holati', 'Amallar'
     ]
-    const tabsTotal = [
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-      { id: 1, name: 'Ozodbek', jobs: 'Dev', body: 'some text'},
-    ]
-    const itemsPerPage = ref(10)
+    const itemsPerPage = ref(10);
+    const route = useRoute();
+    const currentQueryPage = ref(route.query.page);
     const activateTab = (tab: string) => {
       activeTab.value = tab;
     };
 
-    const fetchDataAfterLogin = async () => {
-      if (authStore.isAuthenticated) {
-        const savedData = localStorage.getItem('itemsData');
-        const savedAuthenticated = localStorage.getItem('isAuthenticated');
-        if (savedData && savedAuthenticated) {
-          items.value = JSON.parse(savedData);
-        } else {
-          await itemsStore.fetchDataList();
-          items.value = itemsStore.items
-          localStorage.setItem('itemsData', JSON.stringify(items.value))
-        }
+    const statusSponsors = (status: string) => {
+      if (status === 'Yangi') {
+        return 'new-text'
+      } else if (status === 'Moderatsiyada') {
+        return 'in-moderation-text'
+      } else if (status === 'Bekor qilingan') {
+        return 'canceled-text'
+      } else {
+        return 'confirmed-text'
       }
+    };
 
-      console.log(items.value)
+    const fetchDataAfterLogin = async (url:string, page:number) => {
+      if (authStore.isAuthenticated) {
+        await itemsStore.fetchDataList(url, page);
+        items.value = itemsStore.items;
+      }
     };
 
     onMounted(() => {
-      fetchDataAfterLogin();
+      const routeQueryPage = route.query.page;
+      fetchDataAfterLogin('sponsor-list',routeQueryPage ? Number(routeQueryPage) : 1);
+    });
+
+    watch(() => route.query.page, async (newPage, oldPage) => {
+      await fetchDataAfterLogin('sponsor-list',Number(newPage));
     })
+
 
     return {
       items,
@@ -169,7 +143,8 @@ export default defineComponent({
       tabs,
       tableColumns,
       itemsPerPage,
-      tabsTotal
+      totalPages,
+      statusSponsors
     }
   }
 })
@@ -264,6 +239,57 @@ export default defineComponent({
 .filter-panel {
   border-radius: 5px;
   background: #EDF1FD;
+}
+
+tbody tr {
+  margin-bottom: 12px;
+  display: flex;
+  border-radius: 8px;
+  border: 1px solid rgba(46, 91, 255, 0.08);
+  background: #FFF;
+  width: 100%;
+}
+
+td {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  text-align: center;
+  width: 100%;
+  color: #1D1D1F;
+  font-size: 14px;
+
+  .status {
+    color: #5BABF2;
+    font-size: 15px;
+    font-weight: 400;
+
+    &.new-text {
+      color: #5BABF2;
+    }
+    &.in-moderation-text {
+      color: #FFA445;
+    }
+    &.canceled-text {
+      color: #979797;
+    }
+    &.confirmed-text {
+      color: #00CF83;
+    }
+  }
+
+  .currency-unit {
+    color: #B2B7C1;
+    display: block;
+    margin-left: 4px;
+  }
+
+  &:first-child {
+    width: 100%;
+    max-width: 56px;
+  }
+
 }
 
 

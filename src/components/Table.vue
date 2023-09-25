@@ -3,48 +3,15 @@
     <table>
       <thead>
       <tr>
-        <th v-for="column in columns" :key="column">{{ column }}</th>
+        <th v-for="column in columns" :key="column">
+          {{ column.toUpperCase() }}
+        </th>
       </tr>
       </thead>
       <tbody>
-      <tr v-for="(row, index) in paginatedData" :key="index">
-        <td v-for="(value, colIndex) in row" :key="colIndex">
-          {{ value }}
-        </td>
-      </tr>
+        <slot></slot>
       </tbody>
     </table>
-
-    <div class="tab-content__bottom flex items-center justify-between">
-      <span class="tab-content__info-text">{{data.length}} tadan 1-{{itemsPerPage}} tasi ko`rsatilmoqda</span>
-      <div class="pagination">
-        <div class="custom-select mr-5 flex items-center">
-          <span class="tab-content__info-text block mr-3">Ko‘rsatish</span>
-          <div class="selected-option" @click="toggleDropdown">
-            <span class="block mr-2">{{ currentPage }}</span>
-            <svg class="icon flex-shrink-0" width="16" height="16">
-              <use xlink:href="@/assets/icons/sprite.svg#down"></use>
-            </svg>
-          </div>
-          <ul class="dropdown-list" v-if="isDropdownOpen">
-            <li v-for="page in totalPageOptions" :key="page" @click="gotoPage(page)">{{ page }}</li>
-          </ul>
-        </div>
-        <button class="pagination__btn pagination__btn-prev" @click="prevPage" :disabled="currentPage === 1">
-          <svg class="icon" width="24" height="24">
-            <use xlink:href="@/assets/icons/sprite.svg#down"></use>
-          </svg>
-        </button>
-        <template v-for="page in visiblePages" :key="page">
-          <button class="pagination__btn" @click="gotoPage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
-        </template>
-        <button class="pagination__btn pagination__btn-next" @click="nextPage" :disabled="currentPage === totalPages">
-          <svg class="icon" width="24" height="24">
-            <use xlink:href="@/assets/icons/sprite.svg#down"></use>
-          </svg>
-        </button>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -163,6 +130,11 @@ thead tr {
     color: #B1B1B8;
     width: 100%;
     font-size: 12px;
+
+    &:first-child {
+      width: 100%;
+      max-width: 56px;
+    }
   }
 }
 

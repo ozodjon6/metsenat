@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto tab-content__bottom flex items-center justify-between">
-    <span class="tab-content__info-text">{{data.length}} tadan 1-{{itemsPerPage}} tasi ko`rsatilmoqda</span>
+    <span class="tab-content__info-text">{{ meta.count}} tadan 1-{{ itemsPerPage }} tasi ko`rsatilmoqda</span>
     <div class="pagination flex items-center">
       <div class="custom-select mr-5 flex items-center">
         <span class="tab-content__info-text block mr-3">Ko‘rsatish</span>
@@ -20,7 +20,10 @@
         </svg>
       </button>
       <template v-for="page in visiblePages" :key="page">
-        <button class="pagination__btn" @click="gotoPage(page)" :class="{ active: currentPage === page }">{{ page }}</button>
+        <button class="pagination__btn" @click="gotoPage(page)" :class="{ active: currentPage === page }">{{
+            page
+          }}
+        </button>
       </template>
       <button class="pagination__btn pagination__btn-next" @click="nextPage" :disabled="currentPage === totalPages">
         <svg class="icon" width="24" height="24">
@@ -34,11 +37,15 @@
 
 <script lang="ts">
 import {defineComponent, computed, ref} from 'vue'
+import {useRouter} from "vue-router";
+import {storeToRefs} from "pinia";
+import {useItemsStore} from "@/store/sponser-list";
 
 export default defineComponent({
   name: "Pagination",
   props: {
     data: Array as () => any[],
+    columns: Array as () => string[],
     currentPage: Number,
     totalPages: Number,
     itemsPerPage: Number,
@@ -46,17 +53,12 @@ export default defineComponent({
   setup(props) {
     const currentPage = ref(1);
     const isDropdownOpen = ref(false);
-
-    const totalPages = computed(() => Math.ceil(props.data.length / props.itemsPerPage));
-
-    const paginatedData = computed(() => {
-      const startIndex = (currentPage.value - 1) * props.itemsPerPage;
-      const endIndex = startIndex + props.itemsPerPage;
-      return props.data.slice(startIndex, endIndex);
-    });
+    const router = useRouter()
+    const itemsStore = useItemsStore();
+    const { meta } = storeToRefs(itemsStore)
 
     const nextPage = () => {
-      if (currentPage.value < totalPages.value) {
+      if (currentPage.value < props.totalPages) {
         currentPage.value++;
       }
     };
@@ -68,9 +70,9 @@ export default defineComponent({
     };
 
     const visiblePages = computed(() => {
-      const pageCount = totalPages.value;
+      const pageCount = props.totalPages;
       if (pageCount <= 5) {
-        return Array.from({ length: pageCount }, (_, i) => i + 1);
+        return Array.from({length: pageCount}, (_, i) => i + 1);
       } else {
         const currentPageValue = currentPage.value;
         const pages = [1, 2];
@@ -101,8 +103,8 @@ export default defineComponent({
     });
 
     const totalPageOptions = computed(() => {
-      const pageCount = totalPages.value;
-      return Array.from({ length: pageCount }, (_, i) => i + 1);
+      const pageCount = props.totalPages;
+      return Array.from({length: pageCount}, (_, i) => i + 1);
     });
 
     const toggleDropdown = () => {
@@ -110,7 +112,8 @@ export default defineComponent({
     };
 
     const gotoPage = (page: number) => {
-      if (page >= 1 && page <= totalPages.value) {
+      if (page >= 1 && page <= props.totalPages) {
+        router.push({query: {page: page}});
         currentPage.value = page;
         isDropdownOpen.value = false;
       }
@@ -119,14 +122,14 @@ export default defineComponent({
     return {
       currentPage,
       isDropdownOpen,
-      totalPages,
-      paginatedData,
+      totalPages: props.totalPages,
       nextPage,
       prevPage,
       visiblePages,
       gotoPage,
       totalPageOptions,
-      toggleDropdown
+      toggleDropdown,
+      meta
     };
   },
 })
@@ -134,19 +137,22 @@ export default defineComponent({
 
 <style scoped lang="scss">
 
-.pagination  {
+.pagination {
   .pagination__btn-prev,
   .pagination__btn-next {
     display: flex;
     align-items: center;
     justify-content: center;
   }
+
   .pagination__btn-prev {
     transform: rotate(90deg);
   }
+
   .pagination__btn-next {
     transform: rotate(-90deg);
   }
+
   .pagination__btn {
     width: 32px;
     height: 32px;
@@ -178,6 +184,7 @@ export default defineComponent({
 .custom-select {
   position: relative;
 }
+
 .selected-option {
   width: 54px;
   height: 32px;
