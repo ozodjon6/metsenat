@@ -11,21 +11,23 @@
           </svg>
         </div>
         <ul class="dropdown-list" v-if="isDropdownOpen">
-          <li v-for="page in totalPageOptions" :key="page" @click="gotoPage(page)">{{ page }}</li>
+          <li v-for="(page, index) in totalPageOptions"
+              :key="index"
+              @click="gotoPage(Number(page))"
+          >{{ page }}</li>
         </ul>
       </div>
-      <button class="pagination__btn pagination__btn-prev" @click="prevPage" :disabled="currentPage === 1">
+      <button class="pagination__btn pagination__btn-prev" @click="prevPage(Number(currentPage - 1))" :disabled="currentPage === 1">
         <svg class="icon" width="24" height="24">
           <use xlink:href="@/assets/icons/sprite.svg#down"></use>
         </svg>
       </button>
       <template v-for="page in visiblePages" :key="page">
-        <button class="pagination__btn" @click="gotoPage(page)" :class="{ active: currentPage === page }">{{
-            page
-          }}
+        <button class="pagination__btn" @click="gotoPage(Number(page))" :class="{ active: currentPage === page }">
+          {{page}}
         </button>
       </template>
-      <button class="pagination__btn pagination__btn-next" @click="nextPage" :disabled="currentPage === totalPages">
+      <button class="pagination__btn pagination__btn-next" @click="nextPage(Number(currentPage + 1))" :disabled="currentPage === totalPages">
         <svg class="icon" width="24" height="24">
           <use xlink:href="@/assets/icons/sprite.svg#down"></use>
         </svg>
@@ -57,25 +59,27 @@ export default defineComponent({
     const itemsStore = useItemsStore();
     const { meta } = storeToRefs(itemsStore)
 
-    const nextPage = () => {
-      if (currentPage.value < props.totalPages) {
+    const nextPage = (page: number) => {
+      if (currentPage.value < props?.totalPages) {
         currentPage.value++;
+        router.push({query: {page: page}});
       }
     };
 
-    const prevPage = () => {
+    const prevPage = (page: number) => {
       if (currentPage.value > 1) {
         currentPage.value--;
+        router.push({query: {page: page}});
       }
     };
 
     const visiblePages = computed(() => {
-      const pageCount = props.totalPages;
-      if (pageCount <= 5) {
-        return Array.from({length: pageCount}, (_, i) => i + 1);
+      const pageCount: number | undefined = props?.totalPages;
+      if (pageCount && pageCount <= 5) {
+        return Array.from({ length: pageCount }, (_, i) => i + 1);
       } else {
-        const currentPageValue = currentPage.value;
-        const pages = [1, 2];
+        const currentPageValue: number = currentPage.value;
+        const pages: (number | string)[] = [1, 2];
         if (currentPageValue <= 4) {
           for (let i = 3; i <= currentPageValue + 1; i++) {
             pages.push(i);
@@ -103,7 +107,7 @@ export default defineComponent({
     });
 
     const totalPageOptions = computed(() => {
-      const pageCount = props.totalPages;
+      const pageCount = props?.totalPages;
       return Array.from({length: pageCount}, (_, i) => i + 1);
     });
 
@@ -112,7 +116,7 @@ export default defineComponent({
     };
 
     const gotoPage = (page: number) => {
-      if (page >= 1 && page <= props.totalPages) {
+      if (page >= 1 && page <= props?.totalPages) {
         router.push({query: {page: page}});
         currentPage.value = page;
         isDropdownOpen.value = false;
@@ -122,7 +126,7 @@ export default defineComponent({
     return {
       currentPage,
       isDropdownOpen,
-      totalPages: props.totalPages,
+      totalPages: props?.totalPages,
       nextPage,
       prevPage,
       visiblePages,

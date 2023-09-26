@@ -14,14 +14,14 @@
               <span class="phone-number">{{item.phone}}</span>
             </td>
             <td>
-              {{item.sum.toLocaleString().replaceAll(',', ' ')}}
+              {{item.sum.toLocaleString().split(',').join(' ')}}
               <span class="currency-unit">UZS</span>
             </td>
             <td>
               {{item.spent}}
               <span class="currency-unit">UZS</span>
             </td>
-            <td>{{new Date(item.created_at).toLocaleDateString('de-DE').replaceAll('.', '-')}}</td>
+            <td>{{new Date(item.created_at).toLocaleDateString('de-DE').split('.').join('-')}}</td>
             <td>
                   <span
                       :class="statusSponsors(item.get_status_display)"
@@ -122,6 +122,7 @@ export default defineComponent({
 tbody tr {
   margin-bottom: 12px;
   display: flex;
+  align-items: center;
   border-radius: 8px;
   border: 1px solid rgba(46, 91, 255, 0.08);
   background: #FFF;
