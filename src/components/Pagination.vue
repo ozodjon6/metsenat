@@ -1,11 +1,11 @@
 <template>
-  <div class="container mx-auto tab-content__bottom flex items-center justify-between">
+  <div class="container mx-auto tab-content__bottom flex items-center justify-between mt-6">
     <span class="tab-content__info-text">{{ meta.count}} tadan 1-{{ itemsPerPage }} tasi ko`rsatilmoqda</span>
     <div class="pagination flex items-center">
       <div class="custom-select mr-5 flex items-center">
         <span class="tab-content__info-text block mr-3">Ko‘rsatish</span>
         <div class="selected-option" @click="toggleDropdown">
-          <span class="block mr-2">{{ currentPage }}</span>
+          <span class="block mr-1">{{ currentPage }}</span>
           <svg class="icon flex-shrink-0" width="16" height="16">
             <use xlink:href="@/assets/icons/sprite.svg#down"></use>
           </svg>
@@ -138,21 +138,30 @@ export default defineComponent({
 <style scoped lang="scss">
 
 .pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tab-content__info-text {
+  color: #1D1D1F;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 22px;
+}
+.pagination  {
   .pagination__btn-prev,
   .pagination__btn-next {
     display: flex;
     align-items: center;
     justify-content: center;
   }
-
   .pagination__btn-prev {
     transform: rotate(90deg);
   }
-
   .pagination__btn-next {
     transform: rotate(-90deg);
   }
-
   .pagination__btn {
     width: 32px;
     height: 32px;
@@ -184,7 +193,6 @@ export default defineComponent({
 .custom-select {
   position: relative;
 }
-
 .selected-option {
   width: 54px;
   height: 32px;
@@ -199,6 +207,8 @@ export default defineComponent({
 
   span {
     line-height: 22px;
+    font-size: 15px;
+    font-weight: 400;
   }
 }
 

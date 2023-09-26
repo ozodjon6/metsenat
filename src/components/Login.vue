@@ -14,8 +14,13 @@
         <span class="form-wrap__label block mb-2 text-left">PAROL</span>
         <input v-model="password" class="form-wrap__input w-full py-3 px-4 transition rounded" type="password" placeholder="••••••••••">
       </label>
+      <vue-recaptcha
+          ref="recaptcha"
+          @verify="onRecaptchaVerified"
+          :sitekey="recaptchaKey"
+      ></vue-recaptcha>
       <button
-          class="btn py-3 w-full flex items-center justify-center"
+          class="btn py-3 w-full flex items-center justify-center mt-5"
           type="submit"
           @click="submitHandler"
           :disabled="isLoginDisabled"
@@ -37,11 +42,11 @@
 import {defineComponent, ref, computed} from "vue";
 import { useAuthStore } from '@/store/auth';
 import { useRouter } from 'vue-router';
-import type {AxiosError} from "axios";
+import { VueRecaptcha } from 'vue-recaptcha';
 
 export default defineComponent({
   name: 'Login',
-  components: {},
+  components: { VueRecaptcha },
   setup() {
     const authStore = useAuthStore();
     const isLoading = ref(false);
@@ -50,22 +55,29 @@ export default defineComponent({
     const password = ref('');
     const router = useRouter();
 
+    const recaptchaResponse = ref('');
+
+    const recaptchaKey = ref('6Ldb7lQoAAAAANSF6G79m80h7wTmab26XeazjBbm');
+
     const isLoginDisabled = computed(() => {
       return !username.value.length || !password.value.length || isLoading.value;
     })
+
+    const onRecaptchaVerified = (response: string) => {
+      recaptchaResponse.value = response;
+    }
 
     const submitHandler = async () => {
       isLoading.value = true;
       errorUser.value = null;
 
       try {
-        await authStore.login(username.value, password.value);
-        // Перенаправление на home page
-        await router.push('/');
-        localStorage.setItem('isAuthenticated', 'true');
+        if (!recaptchaResponse.value) {
+          await authStore.login(username.value, password.value);
+          await router.push('/');
+          localStorage.setItem('isAuthenticated', 'true');
+        }
       } catch (error:any) {
-        // Обработайте ошибку аутентификации здесь
-        console.error('Login error:', error);
         errorUser.value = error.response.data.detail;
       }
 
@@ -78,7 +90,9 @@ export default defineComponent({
       username,
       password,
       submitHandler,
-      isLoginDisabled
+      isLoginDisabled,
+      recaptchaKey,
+      onRecaptchaVerified
     }
   }
 })

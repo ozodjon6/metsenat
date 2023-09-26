@@ -7,8 +7,13 @@ export default defineComponent({
 
     // Проверяем состояние аутентификации в localStorage при загрузке страницы
     onMounted(() => {
-      const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-      authStore.setIsAuthenticated(isAuthenticated);
+      if  (authStore.token) {
+        const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+        authStore.setIsAuthenticated(isAuthenticated);
+      } else {
+        const isAuthenticated = localStorage.getItem('isAuthenticated') === 'false';
+        authStore.setIsAuthenticated(isAuthenticated);
+      }
     });
 
     return {};
