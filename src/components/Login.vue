@@ -57,7 +57,7 @@ export default defineComponent({
 
     const recaptchaResponse = ref('');
 
-    const recaptchaKey = ref('6Ldb7lQoAAAAANSF6G79m80h7wTmab26XeazjBbm');
+    const recaptchaKey = ref('6LcdMnEoAAAAAFNE2cz9KeXY4O8foymSrJ0xujia');
 
     const isLoginDisabled = computed(() => {
       return !username.value.length || !password.value.length || isLoading.value;
