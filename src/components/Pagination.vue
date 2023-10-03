@@ -60,7 +60,7 @@ export default defineComponent({
     const { meta } = storeToRefs(itemsStore)
 
     const nextPage = (page: number) => {
-      if (currentPage.value < props?.totalPages) {
+      if (currentPage.value < props?.totalPages!) {
         currentPage.value++;
         router.push({query: {page: page}});
       }
@@ -85,22 +85,22 @@ export default defineComponent({
             pages.push(i);
           }
           pages.push('...');
-          pages.push(pageCount - 1);
-          pages.push(pageCount);
-        } else if (currentPageValue >= pageCount - 3) {
+          pages.push(pageCount! - 1);
+          pages.push(pageCount!);
+        } else if (currentPageValue >= pageCount! - 3) {
           pages.push('...');
-          for (let i = currentPageValue - 1; i < pageCount; i++) {
+          for (let i = currentPageValue - 1; i < pageCount!; i++) {
             pages.push(i);
           }
-          pages.push(pageCount);
+          pages.push(pageCount!);
         } else {
           pages.push('...');
           for (let i = currentPageValue - 1; i <= currentPageValue + 1; i++) {
             pages.push(i);
           }
           pages.push('...');
-          pages.push(pageCount - 1);
-          pages.push(pageCount);
+          pages.push(pageCount! - 1);
+          pages.push(pageCount!);
         }
         return pages;
       }
@@ -108,7 +108,7 @@ export default defineComponent({
 
     const totalPageOptions = computed(() => {
       const pageCount = props?.totalPages;
-      return Array.from({length: pageCount}, (_, i) => i + 1);
+      return Array.from({length: pageCount!}, (_, i) => i + 1);
     });
 
     const toggleDropdown = () => {
@@ -116,7 +116,7 @@ export default defineComponent({
     };
 
     const gotoPage = (page: number) => {
-      if (page >= 1 && page <= props?.totalPages) {
+      if (page >= 1 && page <= props?.totalPages!) {
         router.push({query: {page: page}});
         currentPage.value = page;
         isDropdownOpen.value = false;
