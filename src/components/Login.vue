@@ -16,8 +16,9 @@
       </label>
       <vue-recaptcha
           ref="recaptcha"
-          @verify="onRecaptchaVerified"
           :sitekey="recaptchaKey"
+          @verify="onRecaptchaVerified"
+          @expired="expiredMethod"
       ></vue-recaptcha>
       <button
           class="btn py-3 w-full flex items-center justify-center mt-5"
@@ -48,6 +49,7 @@ export default defineComponent({
   name: 'Login',
   components: { VueRecaptcha },
   setup() {
+    const siteKey = import.meta.env.VITE_APP_SITE_KEY;
     const authStore = useAuthStore();
     const isLoading = ref(false);
     const errorUser = ref<string | null>(null);
@@ -55,16 +57,20 @@ export default defineComponent({
     const password = ref('');
     const router = useRouter();
 
-    const recaptchaResponse = ref('');
+    const recaptchaResponse = ref();
 
-    const recaptchaKey = ref('6LcdMnEoAAAAAFNE2cz9KeXY4O8foymSrJ0xujia');
+    const recaptchaKey = ref('6LcJ79MoAAAAAA9UBvLIKR9EfS_Te_HSfbKLIHNq');
 
     const isLoginDisabled = computed(() => {
-      return !username.value.length || !password.value.length || isLoading.value;
+      return !username.value.length || !password.value.length || isLoading.value || !recaptchaResponse.value
     })
 
     const onRecaptchaVerified = (response: string) => {
       recaptchaResponse.value = response;
+    }
+
+    const expiredMethod = () => {
+      recaptchaResponse.value = null;
     }
 
     const submitHandler = async () => {
@@ -72,7 +78,7 @@ export default defineComponent({
       errorUser.value = null;
 
       try {
-        if (!recaptchaResponse.value) {
+        if (recaptchaResponse.value) {
           await authStore.login(username.value, password.value);
           await router.push('/');
           localStorage.setItem('isAuthenticated', 'true');
@@ -92,7 +98,9 @@ export default defineComponent({
       submitHandler,
       isLoginDisabled,
       recaptchaKey,
-      onRecaptchaVerified
+      onRecaptchaVerified,
+      expiredMethod,
+      siteKey
     }
   }
 })

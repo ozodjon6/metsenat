@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <div class="control-content">
+    <div class="control-content pb-6">
       <div class="container mx-auto">
         <Sponsors v-if="activeTab === 'Homiylar'"/>
         <Dashboard v-if="activeTab === 'Dashboard'"/>
