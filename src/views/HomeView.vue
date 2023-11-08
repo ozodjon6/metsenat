@@ -16,11 +16,7 @@
           </div>
           <div class="control-header__panel flex items-center">
             <div class="search-panel mr-5">
-              <input
-                  type="text"
-                  v-model="searchTerm"
-                  @input="handleInput"
-                  class="search-panel__input" placeholder="Izlash">
+              <SearchPanel @search="handleInput" class="mb-4 sm:mb-0 w-full" />
             </div>
             <div
                 class="filter-panel flex items-center py-2 px-8 cursor-pointer"
@@ -49,6 +45,7 @@ import {defineComponent, onMounted, ref} from 'vue'
 import Header from "@/components/Header.vue";
 import Sponsors from "@/components/Sponsors.vue";
 import Dashboard from "@/components/Dashboard.vue";
+import SearchPanel from "@/components/SearchPanel.vue";
 import Students from "@/components/Students.vue";
 import {statusSponsors} from '@/helpers/statusSponsor'
 import {useAuthStore} from '@/store/auth';
@@ -58,7 +55,7 @@ import router from "@/router";
 export default defineComponent({
   name: "HomeView",
   components: {
-    Header, Sponsors, Dashboard, Students
+    Header, Sponsors, Dashboard, Students,SearchPanel
   },
   setup() {
     const authStore = useAuthStore();
